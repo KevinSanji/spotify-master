@@ -1,21 +1,41 @@
 import React, { Component } from 'react';
 import './App.css';
 import { FormGroup, FormControl, InputGroup, Glyphicon } from 'react-bootstrap';
+import Profile from './Profile';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: ''
+      query: '',
+      artist: null
     }
   }
 
   _search() {
     console.log('this.state', this.state)
-    const ACCESS_TOKEN = '#access_token=BQDkvCsR6hDQdILS-0fvLsxhTLy6SLqq__3kNasR8Dg3UOUUPzwCk-c8gEePxsEzrFVvvWfBETceBiNh4rkzaE4dFfoilo_CSlj_5rg4ZNiM_tl1wvYvzuz6H4UjD3pOaykyq7WE_fDcCZMTZwudbqq0m1Qs9fGO8q3S&refresh_token=AQAX4-pkjkRXKBGigUM_S1ml2wcTaKbMMOpjrHfqW76oaajn9UZ0OGKXEpPbHce3iNGLrtYkF1tnnIOwFACmSwBCQoBMGVULKIbVY9GIOVvct6P0LBGnlSC-70JZ1zy1YDIe9w'
     const BASE_URL = 'https://api.spotify.com/v1/search?';
-    const FETCH_URL = BASE_URL + 'q=' + this.state.query + '&type=artist&limit=1' + ACCESS_TOKEN;
+    const FETCH_URL = `${BASE_URL}q=${this.state.query}&type=artist&limit=1`;
     console.log('FETCH_URL', FETCH_URL);
+    const ACCESS_TOKEN = 'BQDi5C63DVfyPDZ-DzC6zoriHHDFAyYQE3cmkFb8dyIr53TkApZfZWGH1zFGCooC9FJlSQuj_98Tbj3_vZrwSEMjvMXA5EBy49lQRpGxWoF59mGy5JIBQhW2hxyM7ur9HecKnDdID5ebddLhTwCFayepEHGbD59uCbUY&refresh_token=AQCSlm16DQ1jZlTkMJIYilAeldQiEP7x-sdZP7SbR7aBXjj0Um7pSnIFYzMjE_aD3gHPpe8BKmJKyH1QIbFd5o4fEamZPc-hPL5C8YB4LjGiQU4pbic8TKNBJ0La5emExAhHAw';
+    var myHeaders = new Headers();
+
+    var myOptions = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + ACCESS_TOKEN
+      },
+      mode: 'cors',
+      cache: 'default'
+    };
+
+    fetch(FETCH_URL, myOptions)
+      .then(response => response.json())
+      .then(json => {
+        const artist = json.artists.items[0];
+        console.log('artist', artist);
+        this.setState({artist});
+      });
   }
 
   render() {
@@ -40,10 +60,9 @@ class App extends Component {
             </InputGroup.Addon>
           </InputGroup>
         </FormGroup>
-        <div>
-          <div>Artist Picture</div>
-          <div>Artist Name</div>
-        </div>
+        <Profile
+          artist={this.state.artist}
+        />
         <div>
           Gallery
         </div>
