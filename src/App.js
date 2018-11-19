@@ -2,20 +2,23 @@ import React, { Component } from 'react';
 import './App.css';
 import { FormGroup, FormControl, InputGroup, Glyphicon } from 'react-bootstrap';
 import Profile from './Profile';
+import Gallery from './Gallery';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       query: '',
-      artist: null
+      artist: null,
+      tracks: []
     }
   }
 
   _search() {
     const BASE_URL = 'https://api.spotify.com/v1/search?';
-    const FETCH_URL = `${BASE_URL}q=${this.state.query}&type=artist&limit=1`;
-    const ACCESS_TOKEN = 'BQAm7c4NpxVbLdCCl3Szg8SxvSOPMEMAm2E3RDlcHhUX0jgcE4Hy2CPcvdTWdpVTwcsF50iXRlbmjRN7vKW5EszkQ4ugkC6j5yFVOxC--KAYjVOMMkC_B7RDoHH7kREGD3WgdshJGeWbr7ndY9SqCO-9vqVDCCFwWc16&refresh_token=AQDGd4N1BKA-kfQis1wyBibECVJo8I6vvMkMwLMEF-ST5ors0vjpgaQqkp4ymlPbXjtFXaQQsbZJRUIswj96CPEc7wZCT3igVWt0PLmisR_ckGslZn-gbwFdYazGJu5xVUcs2A';
+    let FETCH_URL = `${BASE_URL}q=${this.state.query}&type=artist&limit=1`;
+    const ALBUM_URL = 'https://api.spotify.com/v1/artists/'
+    const ACCESS_TOKEN = 'BQCSv5q0oMVu-whvY9993H2JQiqpULuTp_g53x-9LCZa2VkUE97ICmCsf0RurTEyI_sWmQNwNSnj6SjzJ9nY52QzjuXyfpPsZ7d4aHl2pT41MUGBLwS9wbPoOKnK-e0dJQ5pPsG1UfVcN-ObsCxJLxd6OC9OiyCLcbzA&refresh_token=AQBUIuAtraRZdcfb7V_br72X0LF2SW378gjdyFHPW-9aOCl1c8AKpyJA1hCmbCUNiEeRo9GESgEl9kyZLmwu_fwB2VpXUVNBkA1FJeBwsuAxITHhl6AzqVc63LxAIML8NP44Dg';
     var myHeaders = new Headers();
 
     var myOptions = {
@@ -33,6 +36,15 @@ class App extends Component {
         const artist = json.artists.items[0];
         console.log('artist', artist);
         this.setState({artist});
+
+        FETCH_URL = `${ALBUM_URL}${artist.id}/top-tracks?country=US&`
+        fetch(FETCH_URL, myOptions)
+        .then(response => response.json())
+        .then(json => {
+          console.log('artist\'s top tracks:', json);
+          const { tracks } = json;
+          this.setState({tracks})
+        })
       });
   }
 
@@ -58,12 +70,19 @@ class App extends Component {
             </InputGroup.Addon>
           </InputGroup>
         </FormGroup>
-        <Profile
-          artist={this.state.artist}
-        />
-        <div>
-          Gallery
-        </div>
+        {
+          this.state.artist !== null
+          ?
+            <div>
+              <Profile
+                artist={this.state.artist}
+                />
+              <Gallery
+                tracks={this.state.tracks}
+              />
+            </div>
+          : <div></div>
+        }
       </div>
     )
   }
