@@ -13,20 +13,32 @@ class Gallery extends Component {
 
   playAudio(previewUrl) {
     let audio = new Audio(previewUrl);
-    audio.play();
+
     if (!this.state.playing) {
-      audio.play();
-      this.setState({
-        playing: true,
-        playingUrl: previewUrl,
-        audio
-      })
+
+      if(this.state.playingUrl === previewUrl) {
+        this.state.audio.play();
+        this.setState({
+          playing: true
+        });
+
+      } else {
+        audio.play();
+        this.setState({
+          playing: true,
+          playingUrl: previewUrl,
+          audio
+        })
+      }
+
     } else {
-      if (this.state.playingUrl === previewUrl) {
+
+      if(this.state.playingUrl === previewUrl) {
         this.state.audio.pause();
         this.setState({
           playing: false
-        })
+        });
+
       } else {
         this.state.audio.pause();
         audio.play();
@@ -58,6 +70,15 @@ class Gallery extends Component {
                 className='track-img'
                 alt='track'
               />
+              <div className="track-play">
+                <div className="track-play-inner">
+                  {
+                    this.state.playingUrl === track.preview_url
+                      ? <span>| |</span>
+                      : <span>&#9654;</span>
+                  }
+                </div>
+              </div>
               <p className='track-text'>
                 {track.name}
               </p>
